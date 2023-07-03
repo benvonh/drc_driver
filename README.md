@@ -25,10 +25,10 @@ expect an integer between 0 and 100 in which it converts to a pulsewidth and app
 
 Run driver in normal mode.
 ```sh
-ros2 run driver
+ros2 run drc_driver driver
 ```
 
 Calibrate ESC before subscribing to command topics
 ```sh
-ros2 run driver --ros-args --param calibrate:=1
+ros2 run drc_driver driver --ros-args --param calibrate:=1
 ```
