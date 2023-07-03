@@ -36,8 +36,8 @@ public:
 private:
   void speed_cb(const Int32::SharedPtr msg);
   void steer_cb(const Int32::SharedPtr msg);
-  void set_speed(int pct);
-  void set_steer(int pct);
+  void set_speed(unsigned pw);
+  void set_steer(unsigned pw);
   void calibrate();
 
 private:

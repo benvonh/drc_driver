@@ -56,7 +56,7 @@ void Driver::speed_cb(const Int32::SharedPtr msg)
   }
   else if (msg->data < 0 || msg->data > 100)
   {
-    WARN("Invalid speed %d", msg->data);
+    WARN("Invalid speed %d%%", pct_to_pwm(msg->data));
   }
   else
   {
@@ -72,7 +72,7 @@ void Driver::steer_cb(const Int32::SharedPtr msg)
   }
   else if (msg->data < 0 || msg->data > 100)
   {
-    WARN("Invalid steering %d", msg->data);
+    WARN("Invalid steering %d%%", pct_to_pwm(msg->data));
   }
   else
   {
@@ -80,18 +80,16 @@ void Driver::steer_cb(const Int32::SharedPtr msg)
   }
 }
 
-void Driver::set_speed(int pct)
+void Driver::set_speed(unsigned pw)
 {
-  auto pw = pct_to_pwm(pct);
   if (set_servo_pulsewidth(m_Pi, SPEED_PIN, pw))
-    ERROR("Failed to set speed pulsewidth %d", pw);
+    ERROR("Failed to set speed pulsewidth %d ms", pw);
 }
 
-void Driver::set_steer(int pct)
+void Driver::set_steer(unsigned pw)
 {
-  auto pw = pct_to_pwm(pct);
   if (set_servo_pulsewidth(m_Pi, STEER_PIN, pw))
-    ERROR("Failed to set steering pulsewidth %d", pw);
+    ERROR("Failed to set steering pulsewidth %d ms", pw);
 }
 
 void Driver::calibrate()
