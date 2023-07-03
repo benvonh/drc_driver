@@ -44,7 +44,7 @@ Driver::~Driver()
 {
   set_speed(0);
   set_steer(0);
-  pigpio_stop(_Pi);
+  pigpio_stop(m_Pi);
   INFO("Disconnected from pigpio daemon");
 }
 
