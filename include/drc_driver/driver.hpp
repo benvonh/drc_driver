@@ -6,6 +6,9 @@
 #include <string>
 #include <iostream>
 
+#include <unistd.h>
+#include <termios.h>
+
 #include <pigpiod_if2.h>
 
 #include "rclcpp/rclcpp.hpp"
@@ -27,6 +30,12 @@ inline const unsigned pct_to_pwm(T x)
   return static_cast<unsigned>((PULSE_MAX - PULSE_MIN) * x / 100 + PULSE_MIN);
 }
 
+template<typename T>
+inline const int clamp(T x)
+{
+  return static_cast<int>(x < 0 ? 0 : (x > 100 ? 100 : x));
+}
+
 class Driver : public rclcpp::Node
 {
 public:
@@ -39,6 +48,7 @@ private:
   void set_speed(unsigned pw);
   void set_steer(unsigned pw);
   void calibrate();
+  void manual();
 
 private:
   rclcpp::Subscription<Int32>::SharedPtr m_SpeedSub;

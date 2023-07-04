@@ -1,6 +1,8 @@
 #include "drc_driver/driver.hpp"
 #include "drc_driver/config.hpp"
 
+int getch();
+
 Driver::Driver() : Node("driver")
 {
   m_Pi = pigpio_start(NULL, NULL);
@@ -31,13 +33,26 @@ Driver::Driver() : Node("driver")
     INFO("Skipping calibration...");
   }
 
-  m_SpeedSub = create_subscription<Int32>(
-    "speed_command", 10, std::bind(&Driver::speed_cb, this, _1));
-  m_SteerSub = create_subscription<Int32>(
-    "steer_command", 10, std::bind(&Driver::steer_cb, this, _1));
+  int manual;
+  declare_parameter<int>("manual", 0);
+  get_parameter("manual", manual);
 
-  INFO("Subscribed to topic %s", m_SpeedSub->get_topic_name());
-  INFO("Subscribed to topic %s", m_SteerSub->get_topic_name());
+  if (manual)
+  {
+    INFO("Running in manual mode...");
+    this->manual();
+  }
+  else
+  {
+    INFO("Running in ROS mode...");
+    m_SpeedSub = create_subscription<Int32>(
+      "speed_command", 10, std::bind(&Driver::speed_cb, this, _1));
+    m_SteerSub = create_subscription<Int32>(
+      "steer_command", 10, std::bind(&Driver::steer_cb, this, _1));
+
+    INFO("Subscribed to topic %s", m_SpeedSub->get_topic_name());
+    INFO("Subscribed to topic %s", m_SteerSub->get_topic_name());
+  }
 }
 
 Driver::~Driver()
@@ -95,7 +110,7 @@ void Driver::set_steer(unsigned pw)
 void Driver::calibrate()
 {
   WARN("Please hold the droid up and get ready to connect the battery");
-  WARN("Ensure the ESC is connected to the right pin and is turned on");
+  WARN("Ensure the ESC is connected to pin %d and is turned on", SPEED_PIN);
   SLEEP_3s;
   SLEEP_3s;
 
@@ -121,4 +136,59 @@ void Driver::calibrate()
   SLEEP_3s;
 
   INFO("Calibration complete");
+}
+
+void Driver::manual()
+{
+  rclcpp::WallRate rate(100);
+
+  int speed = 0;
+  int steer = 0;
+
+  while (rclcpp::ok())
+  {
+    int ch = getch();
+
+    switch (ch)
+    {
+    case 'w':
+      speed += 1;
+      break;
+    case 'a':
+      steer += 1;
+      break;
+    case 's':
+      speed -= 1;
+      break;
+    case 'd':
+      steer -= 1;
+      break;
+    default:
+      WARN("Invalid input %c", (char)ch);
+    }
+
+    speed = clamp(speed);
+    steer = clamp(steer);
+    set_speed(pct_to_pwm(speed));
+    set_steer(pct_to_pwm(steer));
+    INFO("SPEED: %d%% | STEER: %d%%", speed, );
+    rate.sleep();
+  }
+
+  set_speed(0);
+  set_steer(0);
+}
+
+int getch()
+{
+  int ch;
+  struct termios oldt;
+  struct termios newt;
+  tcgetattr(STDIN_FILENO, &oldt);
+  newt = oldt;
+  newt.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  ch = getchar();
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+  return ch;
 }
