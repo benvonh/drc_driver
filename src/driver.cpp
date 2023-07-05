@@ -178,6 +178,7 @@ void Driver::manual()
     case ' ':
       speed = 0;
       steer = 50;
+      default;
     default:
       WARN("Invalid input %c", (char)ch);
     }
