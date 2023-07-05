@@ -12,7 +12,7 @@
 #include <pigpiod_if2.h>
 
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/Int32.hpp"
+#include "std_msgs/msg/int32.hpp"
 
 #define INFO(...)  RCLCPP_INFO(get_logger(), __VA_ARGS__)
 #define WARN(...)  RCLCPP_WARN(get_logger(), __VA_ARGS__)
