@@ -23,7 +23,7 @@ if(BUILD_TESTING)
 endif()
 
 include_directories(include)
-add_executable(driver src/driver.cpp src/motor.cpp)
+add_executable(driver src/main.cpp src/driver.cpp)
 target_link_libraries(driver pigpiod_if2 rt)
 ament_target_dependencies(driver rclcpp std_msgs)
 
