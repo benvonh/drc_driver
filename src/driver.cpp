@@ -31,6 +31,7 @@ Driver::Driver() : Node("driver")
   else
   {
     INFO("Skipping calibration...");
+    this->warmup();
   }
 
   int manual;
@@ -166,6 +167,29 @@ void Driver::calibrate()
   INFO("Calibration complete");
 }
 
+void Driver::warmup()
+{
+  WARN("Warming up ESC! Please hold droid up");
+  SLEEP_3s;
+  SLEEP_3s;
+
+  rclcpp::WallRate rate(50);
+
+  for (int i = 0; i <= 100; i++)
+  {
+    INFO("Speed: %d%%", i);
+    set_speed(pct_to_pwm(i));
+    rate.sleep();
+  }
+  for (int i = 100; i >= 0; i--)
+  {
+    INFO("Speed: %d%%", i);
+    set_speed(pct_to_pwm(i));
+    rate.sleep();
+  }
+  set_speed(0);
+}
+
 void Driver::manual()
 {
   rclcpp::WallRate rate(50);
@@ -198,7 +222,7 @@ void Driver::manual()
     case ' ':
       speed = 0;
       steer = 50;
-      default;
+      break;
     default:
       WARN("Invalid input %c", (char)ch);
     }
@@ -206,7 +230,7 @@ void Driver::manual()
     steer = clamp(steer);
     set_speed(pct_to_pwm(speed));
     set_steer(pct_to_pwm(steer));
-    INFO("SPEED: %d%% | STEER: %d%%", speed, steer);
+    INFO("Speed: %d%% | Steer: %d%%", speed, steer);
     rate.sleep();
   }
 }

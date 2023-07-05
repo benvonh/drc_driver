@@ -52,6 +52,7 @@ private:
   void set_speed(unsigned pw);
   void set_steer(unsigned pw);
   void calibrate();
+  void warmup();
   void manual();
 
 private:
