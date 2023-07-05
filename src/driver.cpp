@@ -188,6 +188,7 @@ void Driver::warmup()
     rate.sleep();
   }
   set_speed(0);
+  WARN("Finished warm up");
 }
 
 void Driver::manual()

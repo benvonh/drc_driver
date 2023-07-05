@@ -15,16 +15,16 @@ Default configuration:
 
 ## Usage
 
-Calibration
----
+**Calibration**
+
 Calibrates the ESC connected to the speed pin before driving. Ensure the droid is lifted and the battery connection is
 easily reachable. Follow the steps printed on the screen. Required only once when the ESC is first turned on.
 ```sh
 ros2 run drc_driver driver --ros-args --param calibrate:=1
 ```
 
-Normal Mode
----
+**Normal Mode**
+
 Initialises the `/driver` node and subscribes to two topics:
 - `/speed_command`
 - `/steer_command`
