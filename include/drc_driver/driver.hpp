@@ -33,7 +33,7 @@ inline const unsigned pct_to_pwm(T x)
 }
 
 template<typename T>
-inline const int clamp(T x)
+inline int clamp(T x)
 {
   return static_cast<int>(x < 0 ? 0 : (x > 100 ? 100 : x));
 }
@@ -56,6 +56,6 @@ private:
   rclcpp::Subscription<Int32>::SharedPtr m_SpeedSub;
   rclcpp::Subscription<Int32>::SharedPtr m_SteerSub;
   int m_Pi;
-}
+};
 
 #endif/*__DRIVER_HPP__*/
