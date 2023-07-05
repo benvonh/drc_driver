@@ -24,10 +24,11 @@ using std::placeholders::_1;
 using Int32 = std_msgs::msg::Int32;
 using namespace std::chrono_literals;
 
-#define SLEEP_3s rclcpp::sleep_for(3000000000ns)
+#define SLEEP_3s     rclcpp::sleep_for(3000000000ns)
+#define EXIT_BAD if(!rclcpp::ok()) return
 
 template<typename T>
-inline const unsigned pct_to_pwm(T x)
+inline unsigned pct_to_pwm(T x)
 {
   return static_cast<unsigned>((PULSE_MAX - PULSE_MIN) * x / 100 + PULSE_MIN);
 }

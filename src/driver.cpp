@@ -44,6 +44,9 @@ Driver::Driver() : Node("driver")
   }
   else
   {
+    set_speed(pct_to_pwm(0));
+    set_steer(pct_to_pwm(50));
+
     INFO("Running in ROS mode...");
     m_SpeedSub = create_subscription<Int32>(
       "speed_command", 10, std::bind(&Driver::speed_cb, this, _1));
@@ -98,13 +101,13 @@ void Driver::steer_cb(const Int32::SharedPtr msg)
 void Driver::set_speed(unsigned pw)
 {
   if (set_servo_pulsewidth(m_Pi, SPEED_PIN, pw))
-    ERROR("Failed to set speed pulsewidth %d ms", pw);
+    ERROR("Failed to set speed pulsewidth %d us", pw);
 }
 
 void Driver::set_steer(unsigned pw)
 {
   if (set_servo_pulsewidth(m_Pi, STEER_PIN, pw))
-    ERROR("Failed to set steering pulsewidth %d ms", pw);
+    ERROR("Failed to set steering pulsewidth %d us", pw);
 }
 
 void Driver::calibrate()
@@ -112,38 +115,47 @@ void Driver::calibrate()
   WARN("Please hold the droid up and get ready to connect the battery");
   WARN("Ensure the ESC is connected to pin %d and is turned on", SPEED_PIN);
   SLEEP_3s;
+  EXIT_BAD;
   SLEEP_3s;
+  EXIT_BAD;
 
   WARN("Disconnect battery (1/4)");
   SLEEP_3s;
+  EXIT_BAD;
 
   set_speed(PULSE_MAX);
   WARN("Connect battery (2/4)");
   SLEEP_3s;
+  EXIT_BAD;
 
   WARN("Arming ESC (3/4)");
   set_speed(PULSE_MIN);
   SLEEP_3s;
+  EXIT_BAD;
   set_speed(0);
   SLEEP_3s;
+  EXIT_BAD;
   set_speed(PULSE_MIN);
   SLEEP_3s;
+  EXIT_BAD;
 
   WARN("Finalising (4/4)");
   set_speed((PULSE_MAX + PULSE_MIN) / 2);
   SLEEP_3s;
+  EXIT_BAD;
   set_speed(0);
   SLEEP_3s;
+  EXIT_BAD;
 
   INFO("Calibration complete");
 }
 
 void Driver::manual()
 {
-  rclcpp::WallRate rate(100);
+  rclcpp::WallRate rate(50);
 
   int speed = 0;
-  int steer = 0;
+  int steer = 50;
 
   while (rclcpp::ok())
   {
@@ -163,6 +175,9 @@ void Driver::manual()
     case 'd':
       steer -= 1;
       break;
+    case ' ':
+      speed = 0;
+      steer = 50;
     default:
       WARN("Invalid input %c", (char)ch);
     }
@@ -174,9 +189,6 @@ void Driver::manual()
     INFO("SPEED: %d%% | STEER: %d%%", speed, steer);
     rate.sleep();
   }
-
-  set_speed(0);
-  set_steer(0);
 }
 
 int getch()
