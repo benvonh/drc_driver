@@ -19,6 +19,7 @@
 #define INFO(...)  RCLCPP_INFO(get_logger(), __VA_ARGS__)
 #define WARN(...)  RCLCPP_WARN(get_logger(), __VA_ARGS__)
 #define ERROR(...) RCLCPP_ERROR(get_logger(), __VA_ARGS__)
+#define DEBUG(...) RCLCPP_DEBUG(get_logger(), __VA_ARGS__)
 
 using std::placeholders::_1;
 using Int32 = std_msgs::msg::Int32;

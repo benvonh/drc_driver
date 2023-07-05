@@ -68,44 +68,60 @@ Driver::~Driver()
 
 void Driver::speed_cb(const Int32::SharedPtr msg)
 {
+#ifdef DEBUG
+  DEBUG("speed_cb: msg: data: %d", msg->data);
+#endif
+
   if (msg->data == -1)
   {
     set_speed(0);
   }
   else if (msg->data < 0 || msg->data > 100)
   {
-    WARN("Invalid speed %d%%", pct_to_pwm(msg->data));
+    WARN("Invalid speed %d%%", msg->data);
   }
   else
   {
-    set_speed(msg->data);
+    set_speed(pct_to_pwm(msg->data));
   }
 }
 
 void Driver::steer_cb(const Int32::SharedPtr msg)
 {
+#ifdef DEBUG
+  DEBUG("steer_cb: msg: data: %d", msg->data);
+#endif
+
   if (msg->data == -1)
   {
     set_steer(0);
   }
   else if (msg->data < 0 || msg->data > 100)
   {
-    WARN("Invalid steering %d%%", pct_to_pwm(msg->data));
+    WARN("Invalid steering %d%%", msg->data);
   }
   else
   {
-    set_steer(msg->data);
+    set_steer(pct_to_pwm(msg->data));
   }
 }
 
 void Driver::set_speed(unsigned pw)
 {
+#ifdef DEBUG
+  DEBUG("set_speed: pw: %u", pw);
+#endif
+
   if (set_servo_pulsewidth(m_Pi, SPEED_PIN, pw))
     ERROR("Failed to set speed pulsewidth %d us", pw);
 }
 
 void Driver::set_steer(unsigned pw)
 {
+#ifdef DEBUG
+  DEBUG("set_steer: pw: %u", pw);
+#endif
+
   if (set_servo_pulsewidth(m_Pi, STEER_PIN, pw))
     ERROR("Failed to set steering pulsewidth %d us", pw);
 }
@@ -161,6 +177,10 @@ void Driver::manual()
   {
     int ch = getch();
 
+#ifdef DEBUG
+    DEBUG("manual: ch: %c", (char)ch);
+#endif
+
     switch (ch)
     {
     case 'w':
@@ -182,7 +202,6 @@ void Driver::manual()
     default:
       WARN("Invalid input %c", (char)ch);
     }
-
     speed = clamp(speed);
     steer = clamp(steer);
     set_speed(pct_to_pwm(speed));
@@ -194,6 +213,8 @@ void Driver::manual()
 
 int getch()
 {
+  tcflush(STDIN_FILENO, TCIFLUSH);
+
   int ch;
   struct termios oldt;
   struct termios newt;

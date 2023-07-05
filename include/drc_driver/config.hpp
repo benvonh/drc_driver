@@ -16,4 +16,7 @@
 // Maximum pulsewidth in microseconds
 #define PULSE_MAX 2000
 
+// Uncomment for debug mode
+//#define DEBUG
+
 #endif/*__CONFIG_HPP__*/
