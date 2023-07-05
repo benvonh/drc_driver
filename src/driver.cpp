@@ -171,7 +171,7 @@ void Driver::manual()
     steer = clamp(steer);
     set_speed(pct_to_pwm(speed));
     set_steer(pct_to_pwm(steer));
-    INFO("SPEED: %d%% | STEER: %d%%", speed, );
+    INFO("SPEED: %d%% | STEER: %d%%", speed, steer);
     rate.sleep();
   }
 
