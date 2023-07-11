@@ -1,6 +1,6 @@
 # drc_driver
 
-ROS2 driver for the Droid Racing Challenge.
+ROS2 driver for Droid Racing Challenge.
 
 ## Config
 
